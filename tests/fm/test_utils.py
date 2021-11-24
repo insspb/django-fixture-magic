@@ -2,9 +2,10 @@ from __future__ import absolute_import
 
 import os
 import unittest
+
 os.environ['DJANGO_SETTINGS_MODULE'] = 'tests.test_settings'
 
-from fixture_magic.utils import reorder_json, get_fields, get_m2m
+from fixture_magic.utils import reorder_json
 
 __author__ = 'davedash'
 
