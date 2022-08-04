@@ -46,12 +46,12 @@ class Command(BaseCommand):
             # get the dependent objects and add to serialize list
             for dep in dump_settings['dependents']:
                 try:
-                    thing = Variable("thing.%s" % dep).resolve({'thing': obj})
+                    thing = Variable(f"thing.{dep}").resolve({'thing': obj})
                     if hasattr(thing, 'all'):  # Related managers can't be iterated over
                         thing = thing.all()
                     add_to_serialize_list([thing])
                 except VariableDoesNotExist:
-                    sys.stderr.write('%s not found' % dep)
+                    sys.stderr.write(f'{dep} not found')
 
             if include_primary or not dump_settings['dependents']:
                 add_to_serialize_list([obj])
