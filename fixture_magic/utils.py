@@ -18,14 +18,11 @@ def reorder_json(data, models, ordering_cond=None):
     if ordering_cond is None:
         ordering_cond = {}
     output = []
-    bucket = {}
     others = []
 
-    for model in models:
-        bucket[model] = []
-
+    bucket = {model: [] for model in models}
     for object in data:
-        if object['model'] in bucket.keys():
+        if object['model'] in bucket:
             bucket[object['model']].append(object)
         else:
             others.append(object)
@@ -81,7 +78,7 @@ def add_to_serialize_list(objs):
         meta = obj._meta.proxy_for_model._meta if obj._meta.proxy else obj._meta
         model_name = getattr(meta, 'model_name',
                              getattr(meta, 'module_name', None))
-        key = "%s:%s:%s" % (obj._meta.app_label, model_name, obj.pk)
+        key = f"{obj._meta.app_label}:{model_name}:{obj.pk}"
 
         if key not in seen:
             serialize_me.append(obj)

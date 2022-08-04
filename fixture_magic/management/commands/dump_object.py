@@ -78,7 +78,7 @@ class Command(BaseCommand):
             ids = options['ids']
             if ids and query:
                 raise CommandError(error_text % 'either use query or id list, not both')
-            if not (ids or query):
+            if not ids and not query:
                 raise CommandError(error_text % 'must pass list of --ids or a json --query')
         except IndexError:
             raise CommandError(error_text % 'No object_class or filter clause supplied.')
@@ -93,23 +93,22 @@ class Command(BaseCommand):
         dump_me = loading.get_model(app_label, model_name)
         if query:
             objs = dump_me.objects.filter(**json.loads(query))
+        elif ids[0] == '*':
+            objs = dump_me.objects.all()
         else:
-            if ids[0] == '*':
-                objs = dump_me.objects.all()
-            else:
+            try:
+                parsers = int, long, str
+            except NameError:
+                parsers = int, str
+            for parser in parsers:
                 try:
-                    parsers = int, long, str
-                except NameError:
-                    parsers = int, str
-                for parser in parsers:
-                    try:
-                        objs = dump_me.objects.filter(pk__in=map(parser, ids))
-                    except ValueError:
-                        pass
-                    else:
-                        break
+                    objs = dump_me.objects.filter(pk__in=map(parser, ids))
+                except ValueError:
+                    pass
                 else:
-                    objs = []
+                    break
+            else:
+                objs = []
 
         if options.get('kitchensink'):
             fields = get_all_related_objects(dump_me, options['exclude_fields'])

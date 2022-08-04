@@ -36,7 +36,7 @@ class Command(BaseCommand):
             f = open(f)
             data = json.loads(f.read())
             for obj in data:
-                key = '%s|%s' % (obj['model'], obj['pk'])
+                key = f"{obj['model']}|{obj['pk']}"
                 if key not in seen:
                     seen[key] = 1
                     output.append(obj)
